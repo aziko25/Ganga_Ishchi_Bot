@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 15px;
+            text-align: left;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        /* Add responsiveness for smaller screens */
+        @media (max-width: 600px) {
+            table, th, td {
+                width: 100%;
+                display: block;
+                text-align: center;
+            }
+            th, td {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                border-bottom: 1px solid black;
+            }
+            th::before {
+                content: attr(data-label);
+                font-weight: bold;
+                flex-basis: 50%;
+                display: inline-block;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<h2>User Data</h2>
+
+<table id="userTable">
+    <tr>
+        <th data-label="Delete"><input type="checkbox" id="select-all"></th>
+        <th data-label="Name">Name</th>
+        <th data-label="Age">Age</th>
+        <th data-label="Phone">Phone</th>
+    </tr>
+    <!-- Table data will go here -->
+</table>
+
+<button id="delete-button" style="
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin-top: 10px;
+">Скрыть выбранных пользователей</button>
+
+
+<script>
+    document.getElementById('delete-button').addEventListener('click', function() {
+
+        if (!confirm('Вы уверены, что не хотите видеть выбранных пользователей?')) {
+
+            return;
+        }
+
+        let checkboxes = document.querySelectorAll('.delete-checkbox:checked');
+        let idsToDelete = Array.from(checkboxes)
+            .map(cb => cb.getAttribute('data-id'))
+            .filter(id => id !== 'undefined');
+
+        fetch('http://localhost:9999/api/allUsers/block/html', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(idsToDelete),
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+                location.reload();
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+    });
+
+    document.getElementById('select-all').addEventListener('change', function() {
+        let checkboxes = document.querySelectorAll('.delete-checkbox');
+        checkboxes.forEach(cb => cb.checked = this.checked);
+    });
+
+    fetch('http://localhost:9999/api/allUsers')
+        .then(response => response.json())
+        .then(data => {
+            let table = document.getElementById('userTable');
+            data.forEach(item => {
+                let row = table.insertRow();
+
+                let cell0 = row.insertCell(0);
+                let checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.className = 'delete-checkbox';
+                checkbox.setAttribute('data-id', item.id);
+                cell0.appendChild(checkbox);
+
+                let cell1 = row.insertCell(1);
+                cell1.innerHTML = item.name;
+
+                let cell2 = row.insertCell(2);
+                cell2.innerHTML = item.age;
+
+                let cell3 = row.insertCell(3);
+                cell3.innerHTML = item.phone;
+            });
+        })
+        .catch(error => console.error('Error:', error));
+</script>
+
+</body>
+</html>
