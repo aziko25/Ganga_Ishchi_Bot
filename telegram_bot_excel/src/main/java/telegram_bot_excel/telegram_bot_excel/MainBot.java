@@ -341,7 +341,7 @@ public class MainBot extends TelegramLongPollingBot {
         message.setText("""
                 ISH BO’YICHA SAVOLLAR BILAN MENEJERIMIZGA BOG’LANING
 
-                ☎️+998 90 870 77 70
+                ☎️ +998 90 870 77 70
                         \uD83D\uDC68\uD83C\uDFFB\u200D\uD83D\uDCBBUlug’bek""");
 
         exception(message);
