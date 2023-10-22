@@ -52,19 +52,19 @@ public class MainBot extends TelegramLongPollingBot {
 
             start(chatId, state);
         }
-        else if ("Filiallar".equals(messageText)) {
+        else if ("\uD83D\uDCCD Filiallar".equals(messageText)) {
 
             Filiallar(chatId);
         }
-        else if ("Ro'yhatdan Otish".equals(messageText)) {
+        else if ("\uD83D\uDCDD Ro'yhatdan Otish".equals(messageText)) {
 
             Register(chatId, state);
         }
-        else if ("☎️ALOQA MARKAZI".equals(messageText)) {
+        else if ("☎️ ALOQA MARKAZI".equals(messageText)) {
 
             ManagerNumber(chatId);
         }
-        else if ("Biz Haqimizda".equals(messageText)) {
+        else if ("\uD83C\uDFE2 Biz Haqimizda".equals(messageText)) {
 
             AboutUs(chatId);
         }
@@ -134,10 +134,10 @@ public class MainBot extends TelegramLongPollingBot {
         KeyboardRow row3 = new KeyboardRow();
         KeyboardRow row4 = new KeyboardRow();
 
-        row1.add("Filiallar");
-        row2.add("Ro'yhatdan Otish");
-        row3.add("☎️ALOQA MARKAZI");
-        row4.add("Biz Haqimizda");
+        row1.add("\uD83D\uDCCD Filiallar");
+        row2.add("\uD83D\uDCDD Ro'yhatdan Otish");
+        row3.add("☎️ ALOQA MARKAZI");
+        row4.add("\uD83C\uDFE2 Biz Haqimizda");
 
         keyboard.add(row1);
         keyboard.add(row2);
@@ -156,9 +156,17 @@ public class MainBot extends TelegramLongPollingBot {
         SendMessage message = new SendMessage();
         SendPhoto photo = new SendPhoto();
 
-        // 1st Location
+        /*InputFile photoFile1 = new InputFile(new File("/var/www/html/filial1.jpg"));
+        InputFile photoFile2 = new InputFile(new File("/var/www/html/filial1_2.jpg"));
+        InputFile photoFile3 = new InputFile(new File("/var/www/html/filial2.jpg"));
+        InputFile photoFile4 = new InputFile(new File("/var/www/html/filial2_2.jpg"));*/
+
+        InputFile photoFile1 = new InputFile(new File("C:/Users/User/Downloads/filial1.jpg"));
+        InputFile photoFile2 = new InputFile(new File("C:/Users/User/Downloads/filial1_2.jpg"));
+        InputFile photoFile3 = new InputFile(new File("C:/Users/User/Downloads/filial2.jpg"));
+        InputFile photoFile4 = new InputFile(new File("C:/Users/User/Downloads/filial2_2.jpg"));
+
         message.setChatId(chatId);
-        message.enableMarkdown(true);
         message.setText("""
                 \uD83D\uDCCD1-filiali Amir Temur ko’chasida
                 \uD83D\uDCCCMo’ljal: Qarshi davlat universiteti
@@ -166,22 +174,26 @@ public class MainBot extends TelegramLongPollingBot {
         message.setParseMode(ParseMode.HTML);
         message.setDisableWebPagePreview(true);
 
-        InputFile photoFile1 = new InputFile(new File("/var/www/html/filial1.jpg"));
-        InputFile photoFile2 = new InputFile(new File("/var/www/html/filial1_2.jpg"));
-        InputFile photoFile3 = new InputFile(new File("/var/www/html/filial2.jpg"));
-        InputFile photoFile4 = new InputFile(new File("/var/www/html/filial2_2.jpg"));
-
         photo.setChatId(chatId);
         photo.setPhoto(photoFile1);
+        /*photo.setCaption("""
+                \uD83D\uDCCD1-filiali Amir Temur ko’chasida
+                \uD83D\uDCCCMo’ljal: Qarshi davlat universiteti
+                <a href="https://yandex.com/maps/org/115330481037">\uD83D\uDCCDYandex Lokatsiya</a>""");
+
+        photo.setParseMode(ParseMode.HTML);*/
+
+        // 1st Location
 
         exception(message);
         exceptionPhoto(photo);
 
         photo.setPhoto(photoFile2);
+        photo.setCaption(null);
         exceptionPhoto(photo);
 
         // 2nd Location
-        message.enableMarkdown(true);
+
         message.setText("""
                 \uD83D\uDCCD2-filiali Qarluqobod ko’chasida
                 \uD83D\uDCCCMo’ljal: Marjon supermarketining 2-chi qavatida
@@ -189,14 +201,21 @@ public class MainBot extends TelegramLongPollingBot {
         message.setParseMode(ParseMode.HTML);
         message.setDisableWebPagePreview(true);
 
-        exception(message);
-
         photo.setPhoto(photoFile3);
+        /*photo.setCaption("""
+                \uD83D\uDCCD2-filiali Qarluqobod ko’chasida
+                \uD83D\uDCCCMo’ljal: Marjon supermarketining 2-chi qavatida
+                <a href="https://yandex.com/maps/org/140732442930">\uD83D\uDCCDYandex Lokatsiya</a>""");
+        photo.setParseMode(ParseMode.HTML);*/
+
+        exception(message);
         exceptionPhoto(photo);
 
         photo.setPhoto(photoFile4);
+        photo.setCaption(null);
         exceptionPhoto(photo);
 
+        message.setChatId(chatId);
         message.setText("“Ganga” oz ish faoliyatini xar kuni soat ⏰10:00-00:00 gacha olib boradi.");
         exception(message);
     }
