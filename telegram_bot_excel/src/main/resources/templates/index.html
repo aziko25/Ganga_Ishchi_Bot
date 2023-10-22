@@ -79,7 +79,7 @@
             .map(cb => cb.getAttribute('data-id'))
             .filter(id => id !== 'undefined');
 
-        fetch('http://localhost:9999/api/allUsers/block/html', {
+        fetch('http://161.35.75.184:9999/api/allUsers/block/html', {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -101,7 +101,7 @@
         checkboxes.forEach(cb => cb.checked = this.checked);
     });
 
-    fetch('http://localhost:9999/api/allUsers')
+    fetch('http://161.35.75.184:9999/api/allUsers')
         .then(response => response.json())
         .then(data => {
             let table = document.getElementById('userTable');
