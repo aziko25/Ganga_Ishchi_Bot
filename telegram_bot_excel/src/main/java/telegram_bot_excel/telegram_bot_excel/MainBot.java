@@ -6,6 +6,8 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
+import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove;
@@ -13,6 +15,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -151,7 +154,9 @@ public class MainBot extends TelegramLongPollingBot {
     public void Filiallar(Long chatId) {
 
         SendMessage message = new SendMessage();
+        SendPhoto photo = new SendPhoto();
 
+        // 1st Location
         message.setChatId(chatId);
         message.enableMarkdown(true);
         message.setText("""
@@ -161,8 +166,21 @@ public class MainBot extends TelegramLongPollingBot {
         message.setParseMode(ParseMode.HTML);
         message.setDisableWebPagePreview(true);
 
-        exception(message);
+        InputFile photoFile1 = new InputFile(new File("/var/www/html/filial1.jpg"));
+        InputFile photoFile2 = new InputFile(new File("/var/www/html/filial1_2.jpg"));
+        InputFile photoFile3 = new InputFile(new File("/var/www/html/filial2.jpg"));
+        InputFile photoFile4 = new InputFile(new File("/var/www/html/filial2_2.jpg"));
 
+        photo.setChatId(chatId);
+        photo.setPhoto(photoFile1);
+
+        exception(message);
+        exceptionPhoto(photo);
+
+        photo.setPhoto(photoFile2);
+        exceptionPhoto(photo);
+
+        // 2nd Location
         message.enableMarkdown(true);
         message.setText("""
                 \uD83D\uDCCD2-filiali Qarluqobod ko’chasida
@@ -172,6 +190,12 @@ public class MainBot extends TelegramLongPollingBot {
         message.setDisableWebPagePreview(true);
 
         exception(message);
+
+        photo.setPhoto(photoFile3);
+        exceptionPhoto(photo);
+
+        photo.setPhoto(photoFile4);
+        exceptionPhoto(photo);
 
         message.setText("“Ganga” oz ish faoliyatini xar kuni soat ⏰10:00-00:00 gacha olib boradi.");
         exception(message);
@@ -338,6 +362,19 @@ public class MainBot extends TelegramLongPollingBot {
         }
     }
 
+    public void exceptionPhoto(SendPhoto message) {
+
+        try {
+
+            execute(message);
+        }
+        catch (TelegramApiException e) {
+
+            e.printStackTrace();
+            System.out.println("An error occurred: " + e.getMessage());
+        }
+    }
+
 
     public MainBot(@Value("${bot.token}") String botToken, JdbcTemplate jdbcTemplate) {
 
@@ -348,6 +385,6 @@ public class MainBot extends TelegramLongPollingBot {
     @Override
     public String getBotUsername() {
 
-        return "gangaishchi_bot";
+        return "gangaishchiqarshibot";
     }
 }
