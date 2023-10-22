@@ -45,11 +45,13 @@
 <table id="userTable">
     <tr>
         <th data-label="Delete"><input type="checkbox" id="select-all"></th>
+        <th data-label="Row">Row</th>
         <th data-label="Name">Name</th>
         <th data-label="Age">Age</th>
         <th data-label="Phone">Phone</th>
     </tr>
     <!-- Table data will go here -->
+
 </table>
 
 <button id="delete-button" style="
@@ -104,6 +106,7 @@
         .then(response => response.json())
         .then(data => {
             let table = document.getElementById('userTable');
+            let rowNumber = 1; // Initialize row number
             data.forEach(item => {
                 let row = table.insertRow();
 
@@ -115,13 +118,16 @@
                 cell0.appendChild(checkbox);
 
                 let cell1 = row.insertCell(1);
-                cell1.innerHTML = item.name;
+                cell1.innerHTML = rowNumber++; // Insert row number and increment it
 
                 let cell2 = row.insertCell(2);
-                cell2.innerHTML = item.age;
+                cell2.innerHTML = item.name;
 
                 let cell3 = row.insertCell(3);
-                cell3.innerHTML = item.phone;
+                cell3.innerHTML = item.age;
+
+                let cell4 = row.insertCell(4);
+                cell4.innerHTML = item.phone;
             });
         })
         .catch(error => console.error('Error:', error));
