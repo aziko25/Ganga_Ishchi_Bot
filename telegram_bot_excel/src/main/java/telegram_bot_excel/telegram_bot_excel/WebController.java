@@ -28,7 +28,7 @@ public class WebController {
     @GetMapping()
     public ResponseEntity<?> allUsers() {
 
-        List<Map<String, Object>> users = jdbcTemplate.queryForList("SELECT id, name, age, phone, time FROM users.users WHERE blocked = false ORDER BY time");
+        List<Map<String, Object>> users = jdbcTemplate.queryForList("SELECT id, name, age, phone, time, username FROM users.users WHERE blocked = false ORDER BY time");
 
         return getTime(users);
     }
@@ -36,7 +36,7 @@ public class WebController {
     @GetMapping("/blocked")
     public ResponseEntity<?> allBlockedUsers() {
 
-        List<Map<String, Object>> users = jdbcTemplate.queryForList("SELECT id, name, age, phone, time FROM users.users WHERE blocked = true ORDER BY time");
+        List<Map<String, Object>> users = jdbcTemplate.queryForList("SELECT id, name, age, phone, time, username FROM users.users WHERE blocked = true ORDER BY time");
 
         return getTime(users);
     }

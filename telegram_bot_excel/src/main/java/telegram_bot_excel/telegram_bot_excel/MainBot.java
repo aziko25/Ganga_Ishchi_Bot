@@ -2,7 +2,6 @@ package telegram_bot_excel.telegram_bot_excel;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.SingleColumnRowMapper;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
@@ -40,15 +39,24 @@ public class MainBot extends TelegramLongPollingBot {
         public int AGE;
         public String PHONE_NUMBER;
         public Integer GREETING = 0;
+        public String USERNAME;
     }
 
     @Override
     public void onUpdateReceived(Update update) {
 
         Long chatId = update.getMessage().getChatId();
-        String messageText = update.getMessage().getText();
 
         UserState state = userStates.getOrDefault(chatId, new UserState());
+
+        state.USERNAME = update.getMessage().getFrom().getUserName();
+
+        if (state.USERNAME == null) {
+
+            state.USERNAME = "null";
+        }
+
+        String messageText = update.getMessage().getText();
 
         if ("/start".equals(messageText)) {
 
@@ -163,11 +171,6 @@ public class MainBot extends TelegramLongPollingBot {
         InputFile photoFile3 = new InputFile(new File("/var/www/html/filial2.jpg"));
         InputFile photoFile4 = new InputFile(new File("/var/www/html/filial2_2.jpg"));
 
-        /*InputFile photoFile1 = new InputFile(new File("C:/Users/User/Downloads/filial1.jpg"));
-        InputFile photoFile2 = new InputFile(new File("C:/Users/User/Downloads/filial1_2.jpg"));
-        InputFile photoFile3 = new InputFile(new File("C:/Users/User/Downloads/filial2.jpg"));
-        InputFile photoFile4 = new InputFile(new File("C:/Users/User/Downloads/filial2_2.jpg"));*/
-
         message.setChatId(chatId);
         message.setText("""
                 \uD83D\uDCCD1-filiali Amir Temur ko’chasida
@@ -178,12 +181,6 @@ public class MainBot extends TelegramLongPollingBot {
 
         photo.setChatId(chatId);
         photo.setPhoto(photoFile1);
-        /*photo.setCaption("""
-                \uD83D\uDCCD1-filiali Amir Temur ko’chasida
-                \uD83D\uDCCCMo’ljal: Qarshi davlat universiteti
-                <a href="https://yandex.com/maps/org/115330481037">\uD83D\uDCCDYandex Lokatsiya</a>""");
-
-        photo.setParseMode(ParseMode.HTML);*/
 
         // 1st Location
 
@@ -204,11 +201,6 @@ public class MainBot extends TelegramLongPollingBot {
         message.setDisableWebPagePreview(true);
 
         photo.setPhoto(photoFile3);
-        /*photo.setCaption("""
-                \uD83D\uDCCD2-filiali Qarluqobod ko’chasida
-                \uD83D\uDCCCMo’ljal: Marjon supermarketining 2-chi qavatida
-                <a href="https://yandex.com/maps/org/140732442930">\uD83D\uDCCDYandex Lokatsiya</a>""");
-        photo.setParseMode(ParseMode.HTML);*/
 
         exception(message);
         exceptionPhoto(photo);
@@ -260,10 +252,9 @@ public class MainBot extends TelegramLongPollingBot {
 
         SendMessage message = new SendMessage();
 
-        message.setChatId(chatId);
-
         if (age < 18 || age > 30) {
 
+            message.setChatId(chatId);
             message.setText("18-30 Yosh Bolishiz Kerak!");
 
             exception(message);
@@ -286,14 +277,12 @@ public class MainBot extends TelegramLongPollingBot {
             ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup(keyboard);
             keyboardMarkup.setResizeKeyboard(true);
 
-            SendMessage message1 = new SendMessage();
+            message.setChatId(chatId);
+            message.setText("Iltimos, Raqamingizni Yuvoring:");
 
-            message1.setChatId(chatId);
-            message1.setText("Iltimos, Raqamingizni Yuvoring:");
+            message.setReplyMarkup(keyboardMarkup);
 
-            message1.setReplyMarkup(keyboardMarkup);
-
-            exception(message1);
+            exception(message);
         }
     }
 
@@ -320,19 +309,19 @@ public class MainBot extends TelegramLongPollingBot {
 
             LocalDateTime timeNow = LocalDateTime.now();
 
-            if (phoneNumber.startsWith("+")) {
+            if (state.PHONE_NUMBER.startsWith("+")) {
 
-                phoneNumber = phoneNumber.substring(1);
+                state.PHONE_NUMBER = state.PHONE_NUMBER.substring(1);
             }
 
             String checkIfNumberExists = "SELECT EXISTS (SELECT 1 FROM users.users WHERE phone = ?);";
-            boolean exists = Boolean.TRUE.equals(jdbcTemplate.queryForObject(checkIfNumberExists, Boolean.class, phoneNumber));
+            boolean exists = Boolean.TRUE.equals(jdbcTemplate.queryForObject(checkIfNumberExists, Boolean.class, state.PHONE_NUMBER));
 
             if (!exists) {
 
-                String sql = "INSERT INTO users.users(name, age, phone, time) VALUES(?, ?, ?, ?);";
+                String sql = "INSERT INTO users.users(name, age, phone, time, username) VALUES(?, ?, ?, ?, ?);";
 
-                jdbcTemplate.update(sql, state.NAME, state.AGE, state.PHONE_NUMBER, timeNow);
+                jdbcTemplate.update(sql, state.NAME, state.AGE, state.PHONE_NUMBER, timeNow, "@" + state.USERNAME);
             }
 
             start(chatId, state);

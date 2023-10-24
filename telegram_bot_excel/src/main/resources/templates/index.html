@@ -50,6 +50,7 @@
         <th data-label="Age">Age</th>
         <th data-label="Phone">Phone</th>
         <th data-label="Time">Time</th>
+        <th data-label="Username">Username</th>
     </tr>
     <!-- Table data will go here -->
 </table>
@@ -131,6 +132,9 @@
 
                 let cell5 = row.insertCell(5);
                 cell5.innerHTML = item.time;
+
+                let cell6 = row.insertCell(6);
+                cell6.innerHTML = item.username;
             });
         })
         .catch(error => console.error('Error:', error));
