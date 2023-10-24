@@ -7,7 +7,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Timestamp;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Controller
@@ -26,13 +28,35 @@ public class WebController {
     @GetMapping()
     public ResponseEntity<?> allUsers() {
 
-        return new ResponseEntity<>(jdbcTemplate.queryForList("SELECT id, name, age, phone FROM users.users WHERE blocked = false"), HttpStatus.OK);
+        List<Map<String, Object>> users = jdbcTemplate.queryForList("SELECT id, name, age, phone, time FROM users.users WHERE blocked = false ORDER BY time");
+
+        return getTime(users);
     }
 
     @GetMapping("/blocked")
     public ResponseEntity<?> allBlockedUsers() {
 
-        return new ResponseEntity<>(jdbcTemplate.queryForList("SELECT id, name, age, phone FROM users.users WHERE blocked = true"), HttpStatus.OK);
+        List<Map<String, Object>> users = jdbcTemplate.queryForList("SELECT id, name, age, phone, time FROM users.users WHERE blocked = true ORDER BY time");
+
+        return getTime(users);
+    }
+
+    private ResponseEntity<?> getTime(List<Map<String, Object>> users) {
+
+        for (Map<String, Object> user : users) {
+
+            Timestamp timestamp = (Timestamp) user.get("time");
+            String timestampStr = timestamp.toString();
+
+            if (timestampStr.endsWith(".0")) {
+
+                timestampStr = timestampStr.substring(0, timestampStr.length() - 2);
+            }
+
+            user.put("time", timestampStr);
+        }
+
+        return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
     @GetMapping("/html")

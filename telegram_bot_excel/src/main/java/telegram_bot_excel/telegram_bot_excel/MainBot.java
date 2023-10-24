@@ -2,6 +2,7 @@ package telegram_bot_excel.telegram_bot_excel;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.SingleColumnRowMapper;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
@@ -16,6 +17,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.File;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -156,15 +158,15 @@ public class MainBot extends TelegramLongPollingBot {
         SendMessage message = new SendMessage();
         SendPhoto photo = new SendPhoto();
 
-        /*InputFile photoFile1 = new InputFile(new File("/var/www/html/filial1.jpg"));
+        InputFile photoFile1 = new InputFile(new File("/var/www/html/filial1.jpg"));
         InputFile photoFile2 = new InputFile(new File("/var/www/html/filial1_2.jpg"));
         InputFile photoFile3 = new InputFile(new File("/var/www/html/filial2.jpg"));
-        InputFile photoFile4 = new InputFile(new File("/var/www/html/filial2_2.jpg"));*/
+        InputFile photoFile4 = new InputFile(new File("/var/www/html/filial2_2.jpg"));
 
-        InputFile photoFile1 = new InputFile(new File("C:/Users/User/Downloads/filial1.jpg"));
+        /*InputFile photoFile1 = new InputFile(new File("C:/Users/User/Downloads/filial1.jpg"));
         InputFile photoFile2 = new InputFile(new File("C:/Users/User/Downloads/filial1_2.jpg"));
         InputFile photoFile3 = new InputFile(new File("C:/Users/User/Downloads/filial2.jpg"));
-        InputFile photoFile4 = new InputFile(new File("C:/Users/User/Downloads/filial2_2.jpg"));
+        InputFile photoFile4 = new InputFile(new File("C:/Users/User/Downloads/filial2_2.jpg"));*/
 
         message.setChatId(chatId);
         message.setText("""
@@ -260,7 +262,7 @@ public class MainBot extends TelegramLongPollingBot {
 
         message.setChatId(chatId);
 
-        if (age < 17 || age > 30) {
+        if (age < 18 || age > 30) {
 
             message.setText("18-30 Yosh Bolishiz Kerak!");
 
@@ -312,13 +314,26 @@ public class MainBot extends TelegramLongPollingBot {
             state.PHONE_NUMBER = phoneNumber;
 
             message.setChatId(chatId);
-            message.setText("Rahmat!");
+            message.setText("Rahmat! Siz Ro'yhatdan O'ttiz!");
 
             exception(message);
 
-            String sql = "INSERT INTO users.users(name, age, phone) VALUES(?, ?, ?);";
+            LocalDateTime timeNow = LocalDateTime.now();
 
-            jdbcTemplate.update(sql, state.NAME, state.AGE, state.PHONE_NUMBER);
+            if (phoneNumber.startsWith("+")) {
+
+                phoneNumber = phoneNumber.substring(1);
+            }
+
+            String checkIfNumberExists = "SELECT EXISTS (SELECT 1 FROM users.users WHERE phone = ?);";
+            boolean exists = Boolean.TRUE.equals(jdbcTemplate.queryForObject(checkIfNumberExists, Boolean.class, phoneNumber));
+
+            if (!exists) {
+
+                String sql = "INSERT INTO users.users(name, age, phone, time) VALUES(?, ?, ?, ?);";
+
+                jdbcTemplate.update(sql, state.NAME, state.AGE, state.PHONE_NUMBER, timeNow);
+            }
 
             start(chatId, state);
         }
@@ -404,6 +419,10 @@ public class MainBot extends TelegramLongPollingBot {
     @Override
     public String getBotUsername() {
 
+        // Prod
         return "gangaishchiqarshibot";
+
+        // Test
+        //return "excel_filler_bot";
     }
 }

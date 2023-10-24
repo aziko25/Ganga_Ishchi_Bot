@@ -49,6 +49,7 @@
         <th data-label="Name">Name</th>
         <th data-label="Age">Age</th>
         <th data-label="Phone">Phone</th>
+        <th data-label="Time">Time</th>
     </tr>
     <!-- Table data will go here -->
 </table>
@@ -127,6 +128,9 @@
 
                 let cell4 = row.insertCell(4);
                 cell4.innerHTML = item.phone;
+
+                let cell5 = row.insertCell(5);
+                cell5.innerHTML = item.time;
             });
         })
         .catch(error => console.error('Error:', error));
