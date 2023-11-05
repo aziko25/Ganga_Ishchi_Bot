@@ -297,7 +297,7 @@ public class MainBot extends TelegramLongPollingBot {
 
         state.waitingForNumber = false;
 
-        String regex = "^(\\+)?998[589]\\d{8}$";
+        String regex = "^(\\+)?998[35789]\\d{8}$";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(phoneNumber);
 
@@ -327,7 +327,7 @@ public class MainBot extends TelegramLongPollingBot {
             }
 
             message.setChatId(chatId);
-            message.setText("Qaysi Positsiyaga Mo'ljal?\nBittasini tanlang:");
+            message.setText("Qaysi yo’nalish bo’yicha ishlamoqchisiz?\nBittasini tanlang:");
 
             ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
             keyboardMarkup.setResizeKeyboard(true);
