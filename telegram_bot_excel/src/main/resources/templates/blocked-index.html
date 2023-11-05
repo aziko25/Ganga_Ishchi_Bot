@@ -49,6 +49,7 @@
         <th data-label="Name">Name</th>
         <th data-label="Age">Age</th>
         <th data-label="Phone">Phone</th>
+        <th data-label="Position">Position</th>
         <th data-label="Time">Time</th>
         <th data-label="Username">Username</th>
     </tr>
@@ -132,10 +133,13 @@
                 cell4.innerHTML = item.phone;
 
                 let cell5 = row.insertCell(5);
-                cell5.innerHTML = item.time;
+                cell5.innerHTML = item.position;
 
                 let cell6 = row.insertCell(6);
-                cell6.innerHTML = item.username;
+                cell6.innerHTML = item.time;
+
+                let cell7 = row.insertCell(7);
+                cell7.innerHTML = item.username;
             });
         })
         .catch(error => console.error('Error:', error));

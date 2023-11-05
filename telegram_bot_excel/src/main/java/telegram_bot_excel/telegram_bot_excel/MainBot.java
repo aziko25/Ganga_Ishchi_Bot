@@ -35,11 +35,13 @@ public class MainBot extends TelegramLongPollingBot {
         public Boolean waitingForName = false;
         public Boolean waitingForAge = false;
         public Boolean waitingForNumber = false;
+        public Boolean waitingForPosition = false;
         public String NAME;
         public int AGE;
         public String PHONE_NUMBER;
         public Integer GREETING = 0;
         public String USERNAME;
+        public String POSITION;
     }
 
     @Override
@@ -105,7 +107,10 @@ public class MainBot extends TelegramLongPollingBot {
                 exception(message);
             }
         }
+        else if (!messageText.isEmpty() && state.waitingForPosition) {
 
+            InputPosition(chatId, messageText, state);
+        }
         else if (!messageText.isEmpty() && state.waitingForNumber) {
 
             InputPhoneNumber(chatId, messageText, state);
@@ -121,6 +126,8 @@ public class MainBot extends TelegramLongPollingBot {
     public void start(Long chatId, UserState state) {
 
         SendMessage message = new SendMessage();
+
+        keyBoardRemove(message);
 
         message.setChatId(chatId);
 
@@ -302,11 +309,6 @@ public class MainBot extends TelegramLongPollingBot {
 
             state.PHONE_NUMBER = phoneNumber;
 
-            message.setChatId(chatId);
-            message.setText("Rahmat! Siz Ro'yhatdan O'ttiz!");
-
-            exception(message);
-
             LocalDateTime timeNow = LocalDateTime.now();
 
             if (state.PHONE_NUMBER.startsWith("+")) {
@@ -324,7 +326,34 @@ public class MainBot extends TelegramLongPollingBot {
                 jdbcTemplate.update(sql, state.NAME, state.AGE, state.PHONE_NUMBER, timeNow, "@" + state.USERNAME);
             }
 
-            start(chatId, state);
+            message.setChatId(chatId);
+            message.setText("Qaysi Positsiyaga Mo'ljal?\nBittasini tanlang:");
+
+            ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
+            keyboardMarkup.setResizeKeyboard(true);
+            List<KeyboardRow> keyboard = new ArrayList<>();
+
+            KeyboardRow row1 = new KeyboardRow();
+            KeyboardRow row2 = new KeyboardRow();
+            KeyboardRow row3 = new KeyboardRow();
+
+            row1.add("SHAURMACHI");
+            row1.add("XOT-DOGCHI");
+            row2.add("OFITSANT");
+            row2.add("SALATCHI");
+            row3.add("FARROSH");
+
+            keyboard.add(row1);
+            keyboard.add(row2);
+            keyboard.add(row3);
+
+            keyboardMarkup.setKeyboard(keyboard);
+
+            message.setReplyMarkup(keyboardMarkup);
+
+            exception(message);
+
+            state.waitingForPosition = true;
         }
         else {
 
@@ -334,6 +363,63 @@ public class MainBot extends TelegramLongPollingBot {
             message.setText("Notogri Raqam Terdiz. Iltimos, Yana Bir Bor Urining:");
 
             exception(message);
+        }
+    }
+
+    public void InputPosition(Long chatId, String position, UserState state) {
+
+        state.waitingForPosition = false;
+
+        SendMessage message = new SendMessage();
+
+        if (!position.equals("SHAURMACHI") && !position.equals("XOT-DOGCHI") && !position.equals("OFITSANT") &&
+                !position.equals("SALATCHI") && !position.equals("FARROSH")) {
+
+            message.setChatId(chatId);
+            message.setText("Iltimos, Knopkani Bosing!");
+
+            state.waitingForPosition = true;
+
+            // Create keyboard markup
+            ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
+            keyboardMarkup.setResizeKeyboard(true);
+            List<KeyboardRow> keyboard = new ArrayList<>();
+
+            KeyboardRow row1 = new KeyboardRow();
+            KeyboardRow row2 = new KeyboardRow();
+            KeyboardRow row3 = new KeyboardRow();
+
+            row1.add("SHAURMACHI");
+            row1.add("XOT-DOGCHI");
+            row2.add("OFITSANT");
+            row2.add("SALATCHI");
+            row3.add("FARROSH");
+
+            keyboard.add(row1);
+            keyboard.add(row2);
+            keyboard.add(row3);
+
+            keyboardMarkup.setKeyboard(keyboard);
+
+            // Set the keyboard markup to the message
+            message.setReplyMarkup(keyboardMarkup);
+
+            exception(message);
+        }
+        else {
+            state.POSITION = position;
+
+            System.out.println("Position: " + position);
+
+            String sql = "UPDATE users.users SET position = ? WHERE phone = ?;";
+            jdbcTemplate.update(sql, state.POSITION, state.PHONE_NUMBER);
+
+            message.setChatId(chatId);
+            message.setText("Rahmat! Siz Ro'yhatdan O'ttingiz!");
+
+            exception(message);
+
+            start(chatId, state);
         }
     }
 
@@ -412,6 +498,6 @@ public class MainBot extends TelegramLongPollingBot {
         return "gangaishchiqarshibot";
 
         // Test
-        //return "excel_filler_bot";
+        //return "azizkhuja_test_bot";
     }
 }
